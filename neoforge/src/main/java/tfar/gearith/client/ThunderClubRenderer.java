@@ -5,7 +5,7 @@ package tfar.gearith.client;
 import software.bernie.geckolib.model.DefaultedItemGeoModel;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 import tfar.gearith.Gearith;
-import tfar.gearith.ThunderClubItem;
+import tfar.gearith.item.ThunderClubItem;
 
 public class ThunderClubRenderer extends GeoItemRenderer<ThunderClubItem> {
     public ThunderClubRenderer() {

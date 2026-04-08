@@ -1,6 +1,11 @@
 package tfar.gearith;
 
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
 import tfar.gearith.platform.Services;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Items;
@@ -26,5 +31,26 @@ public class Gearith {
 
     public static ResourceLocation id(String path) {
         return ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID,path);
+    }
+
+    public static boolean hasEnchant(ItemStack stack, ResourceKey<Enchantment> enchantment, HolderLookup.Provider provider) {
+        HolderLookup.RegistryLookup<Enchantment> enchantmentRegistryLookup = provider.lookupOrThrow(Registries.ENCHANTMENT);
+        return stack.getEnchantments().getLevel(enchantmentRegistryLookup.getOrThrow(enchantment)) > 0;
+    }
+
+    public static boolean updateCooldowns(int[] cooldowns) {
+        if (cooldowns != null) {
+            boolean modified = false;
+            for (int i = 0;i<cooldowns.length;i++) {
+                int cooldown = cooldowns[i];
+                if (cooldown > 0) {
+                    cooldowns[i] = cooldown - 1;
+                    modified = true;
+                }
+            }
+            return modified;
+        } else {
+            return false;
+        }
     }
 }
