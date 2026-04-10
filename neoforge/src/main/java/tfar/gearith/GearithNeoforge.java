@@ -57,6 +57,7 @@ public class GearithNeoforge {
     void register(RegisterEvent event) {
         if (event.getRegistry() == BuiltInRegistries.BLOCK) {
             MItems.init();
+            MEntityTypes.init();
             CommonDataAttachments.init();
         }
     }

@@ -6,6 +6,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import tfar.gearith.platform.Services;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Items;
@@ -36,6 +37,11 @@ public class Gearith {
     public static boolean hasEnchant(ItemStack stack, ResourceKey<Enchantment> enchantment, HolderLookup.Provider provider) {
         HolderLookup.RegistryLookup<Enchantment> enchantmentRegistryLookup = provider.lookupOrThrow(Registries.ENCHANTMENT);
         return stack.getEnchantments().getLevel(enchantmentRegistryLookup.getOrThrow(enchantment)) > 0;
+    }
+
+    public static int getEnchantLevel(ItemStack stack, ResourceKey<Enchantment> enchantment, HolderLookup.Provider provider) {
+        HolderLookup.RegistryLookup<Enchantment> enchantmentRegistryLookup = provider.lookupOrThrow(Registries.ENCHANTMENT);
+        return EnchantmentHelper.getItemEnchantmentLevel(enchantmentRegistryLookup.getOrThrow(enchantment),stack);
     }
 
     public static boolean updateCooldowns(int[] cooldowns) {
