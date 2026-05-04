@@ -21,6 +21,7 @@ import net.minecraft.world.phys.Vec3;
 import tfar.gearith.MItems;
 import tfar.gearith.ThunderClubEntity;
 import tfar.gearith.client.renderer.state.ThunderClubEntityRenderState;
+import tfar.gearith.item.ThunderClubItem;
 
 public class ThunderClubEntityRenderer extends EntityRenderer<ThunderClubEntity, ThunderClubEntityRenderState> {
     private final ItemModelResolver itemModelResolver;
@@ -89,13 +90,13 @@ public class ThunderClubEntityRenderer extends EntityRenderer<ThunderClubEntity,
     }
 
     public static HumanoidArm getHoldingArm(Player player) {
-        return player.getMainHandItem().getItem() instanceof FishingRodItem ? player.getMainArm() : player.getMainArm().getOpposite();
+        return player.getMainHandItem().getItem() instanceof ThunderClubItem ? player.getMainArm() : player.getMainArm().getOpposite();
     }
 
     private Vec3 getPlayerHandPos(Player player, float handAngle, float partialTick) {
         int i = getHoldingArm(player) == HumanoidArm.RIGHT ? 1 : -1;
         if (this.entityRenderDispatcher.options.getCameraType().isFirstPerson() && player == Minecraft.getInstance().player) {
-            double d4 = 960.0 / this.entityRenderDispatcher.options.fov().get().intValue();
+            double d4 = 960.0 / this.entityRenderDispatcher.options.fov().get();
             Vec3 vec3 = this.entityRenderDispatcher
                     .camera
                     .getNearPlane()

@@ -13,7 +13,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.client.GeoRenderProvider;
@@ -26,6 +25,7 @@ import tfar.gearith.ModEnchantments;
 import tfar.gearith.PlayerDuck;
 import tfar.gearith.ThunderClubEntity;
 import tfar.gearith.client.renderer.ThunderClubItemRenderer;
+import tfar.gearith.platform.Services;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -52,7 +52,7 @@ public class ThunderClubItem extends Item implements GeoItem {
                 ItemStack original = stack.copy();
                 stack.hurtAndBreak(i, player, hand.asEquipmentSlot());
                 if(stack.isEmpty()) {
-                    EventHooks.onPlayerDestroyItem(player, original, hand);
+                    Services.PLATFORM.postOnPlayerDestroyedItem(player, original, hand);
                 }
             }
 

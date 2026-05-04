@@ -8,7 +8,6 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -20,6 +19,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import tfar.gearith.platform.Services;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -75,7 +75,6 @@ public class ThunderClubEntity extends Projectile {
         Player player = this.getPlayerOwner();
         if (!this.level().isClientSide() && player != null && !this.shouldRemoveClub(player)) {
             int i = 0;
-            net.neoforged.neoforge.event.entity.player.ItemFishedEvent event = null;
             if (this.hookedIn != null) {
                 this.pullEntity(this.hookedIn);
                 //CriteriaTriggers.FISHING_ROD_HOOKED.trigger((ServerPlayer)player, stack, this, Collections.emptyList());
@@ -88,7 +87,6 @@ public class ThunderClubEntity extends Projectile {
             }
 
             this.discard();
-            if (event != null) return event.getRodDamage();
             return i;
         } else {
             return 0;
@@ -217,7 +215,8 @@ public class ThunderClubEntity extends Projectile {
 
     private void checkCollision() {
         HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
-        if (hitresult.getType() == HitResult.Type.MISS || !net.neoforged.neoforge.event.EventHooks.onProjectileImpact(this, hitresult)) this.onHit(hitresult);
+        if (hitresult.getType() == HitResult.Type.MISS ||
+                !Services.PLATFORM.postOnProjectileImpact(this, hitresult)) this.onHit(hitresult);
     }
 
     @Override

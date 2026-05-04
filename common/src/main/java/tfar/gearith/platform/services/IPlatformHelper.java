@@ -3,7 +3,12 @@ package tfar.gearith.platform.services;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.HitResult;
 import org.jetbrains.annotations.Nullable;
 import tfar.gearith.attachments.CommonDataAttachment;
 import tfar.gearith.network.server.C2SModPacket;
@@ -62,4 +67,8 @@ public interface IPlatformHelper {
     }
 
     <T> void setAttachedValue(Object object, CommonDataAttachment<T> attachment, @Nullable T value);
+
+    void postOnPlayerDestroyedItem(Player player, ItemStack itemStack, InteractionHand hand);
+
+    boolean postOnProjectileImpact(Projectile projectile, HitResult hitResult);
 }

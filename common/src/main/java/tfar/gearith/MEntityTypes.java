@@ -6,7 +6,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.item.Item;
 
 public class MEntityTypes {
     public static final EntityType<ThunderClubEntity> THUNDER_CLUB = EntityType.Builder.<ThunderClubEntity>of(ThunderClubEntity::new, MobCategory.MISC)

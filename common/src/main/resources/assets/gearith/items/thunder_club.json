@@ -1,9 +1,17 @@
 {
   "model": {
-    "type": "minecraft:special",
-    "base": "gearith:item/thunder_club",
-    "model": {
-      "type": "geckolib:geckolib"
-    }
+    "type": "minecraft:condition",
+    "on_false": {
+      "type": "minecraft:special",
+      "base": "gearith:item/thunder_club",
+      "model": {
+        "type": "geckolib:geckolib"
+      }
+    },
+    "on_true": {
+      "type": "minecraft:model",
+      "model": "gearith:item/thunder_club_cast"
+    },
+    "property": "gearith:thunder_club/cast"
   }
 }

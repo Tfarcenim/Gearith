@@ -1,0 +1,9 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "gearith:item/thunder_club",
+    "model": {
+      "type": "geckolib:geckolib"
+    }
+  }
+}

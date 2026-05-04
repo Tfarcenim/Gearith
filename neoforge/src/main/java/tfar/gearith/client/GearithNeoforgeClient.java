@@ -2,17 +2,17 @@ package tfar.gearith.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.renderer.entity.EntityRenderers;
-import net.minecraft.client.renderer.entity.FishingHookRenderer;
-import net.minecraft.world.entity.EntityType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.neoforge.client.event.RegisterConditionalItemModelPropertyEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.common.NeoForge;
 import tfar.gearith.Constants;
+import tfar.gearith.Gearith;
 import tfar.gearith.MEntityTypes;
 import tfar.gearith.client.renderer.ThunderClubEntityRenderer;
 import tfar.gearith.network.server.C2SModPacket;
@@ -23,11 +23,16 @@ public class GearithNeoforgeClient {
     public GearithNeoforgeClient(IEventBus bus) {
         bus.addListener(this::keybinds);
         bus.addListener(this::renderers);
+        bus.addListener(this::conditionalModels);
         NeoForge.EVENT_BUS.addListener(this::keyPress);
     }
 
     void renderers(EntityRenderersEvent.RegisterRenderers event) {
         EntityRenderers.register(MEntityTypes.THUNDER_CLUB, ThunderClubEntityRenderer::new);
+    }
+
+    void conditionalModels(RegisterConditionalItemModelPropertyEvent event) {
+        event.register(Gearith.id("thunder_club/cast"),ThunderClubCast.MAP_CODEC);
     }
 
     void keybinds(RegisterKeyMappingsEvent event){

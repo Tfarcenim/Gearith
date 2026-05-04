@@ -5,8 +5,14 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
+import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.Nullable;
@@ -92,5 +98,15 @@ public class NeoForgePlatformHelper implements IPlatformHelper {
         } else {
             throw new IllegalStateException("Cannot attach data to " + object);
         }
+    }
+
+    @Override
+    public void postOnPlayerDestroyedItem(Player player, ItemStack itemStack, InteractionHand hand) {
+        EventHooks.onPlayerDestroyItem(player, itemStack, hand);
+    }
+
+    @Override
+    public boolean postOnProjectileImpact(Projectile projectile, HitResult hitResult) {
+        return EventHooks.onProjectileImpact(projectile, hitResult);
     }
 }
