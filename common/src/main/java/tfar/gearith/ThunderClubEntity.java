@@ -4,50 +4,55 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.projectile.ProjectileDeflection;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 import tfar.gearith.platform.Services;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class ThunderClubEntity extends Projectile {
 
     @Nullable
     private Entity hookedIn;
     private ClubState currentState = ClubState.FLYING;
-    private int pullingSpike;
+    private final int pullingSpike;
     private final RandomSource syncronizedRandom = RandomSource.create();
     private int life;
     private final InterpolationHandler interpolationHandler = new InterpolationHandler(this);
+    private boolean dealtDamage;
 
     private static final EntityDataAccessor<Integer> DATA_HOOKED_ENTITY = SynchedEntityData.defineId(ThunderClubEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<ItemStack> DATA_ITEM = SynchedEntityData.defineId(ThunderClubEntity.class, EntityDataSerializers.ITEM_STACK);
 
 
-    public ThunderClubEntity(EntityType<? extends ThunderClubEntity> entityType, Level level, int pullingSpike) {
+    public ThunderClubEntity(EntityType<? extends ThunderClubEntity> entityType, Level level, int pullingSpike,ItemStack stack) {
         super(entityType, level);
         this.pullingSpike = pullingSpike;
+        setItem(stack);
     }
 
     protected ThunderClubEntity(EntityType<? extends ThunderClubEntity> entityType, Level level) {
-        this(entityType, level,0);
+        this(entityType, level,0,ItemStack.EMPTY);
     }
-    public ThunderClubEntity(Player owner, Level level,int pullingSpike) {
-        this(MEntityTypes.THUNDER_CLUB, level,pullingSpike);
+    public ThunderClubEntity(Player owner, Level level,int pullingSpike,ItemStack stack) {
+        this(MEntityTypes.THUNDER_CLUB, level,pullingSpike,stack);
         this.setOwner(owner);
         float f = owner.getXRot();
         float f1 = owner.getYRot();
@@ -93,7 +98,14 @@ public class ThunderClubEntity extends Projectile {
         }
     }
 
-    @Nonnull
+    public void setItem(ItemStack stack) {
+        entityData.set(DATA_ITEM, stack);
+    }
+
+    public ItemStack getItem() {
+        return entityData.get(DATA_ITEM);
+    }
+
     @Override
     public InterpolationHandler getInterpolation() {
         return this.interpolationHandler;
@@ -230,9 +242,44 @@ public class ThunderClubEntity extends Projectile {
     @Override
     protected void onHitEntity(EntityHitResult result) {
         super.onHitEntity(result);
+        if (dealtDamage)return;
+        Entity entity = result.getEntity();
         if (!this.level().isClientSide()) {
-            this.setHookedEntity(result.getEntity());
+            hurtCollidedEntity(entity);
+            if (pullingSpike > 0) {
+                this.setHookedEntity(entity);
+            }
+            dealtDamage = true;
         }
+    }
+
+    void hurtCollidedEntity(Entity entity) {
+        float f = 8.0F;
+        Entity owner = this.getOwner();
+        DamageSource damagesource = this.damageSources().trident(this, owner == null ? this : owner);
+        if (this.level() instanceof ServerLevel serverlevel) {
+            f = EnchantmentHelper.modifyDamage(serverlevel, this.getWeaponItem(), entity, damagesource, f);
+        }
+
+        //this.dealtDamage = true;
+        if (entity.hurtOrSimulate(damagesource, f)) {
+            if (entity.getType() == EntityType.ENDERMAN) {
+                return;
+            }
+
+            if (this.level() instanceof ServerLevel serverlevel1) {
+                EnchantmentHelper.doPostAttackEffectsWithItemSourceOnBreak(
+                        serverlevel1, entity, damagesource, this.getWeaponItem(), p_375964_ -> this.kill(serverlevel1)
+                );
+            }
+
+            if (entity instanceof LivingEntity livingentity) {
+                //this.doKnockback(livingentity, damagesource);
+               // this.doPostHurtEffects(livingentity);
+            }
+        }
+
+        this.deflect(ProjectileDeflection.REVERSE, entity, this.owner, false);
     }
 
     @Override
@@ -246,6 +293,10 @@ public class ThunderClubEntity extends Projectile {
         this.getEntityData().set(DATA_HOOKED_ENTITY, hookedEntity == null ? 0 : hookedEntity.getId() + 1);
     }
 
+    @Override
+    public @org.jetbrains.annotations.Nullable ItemStack getWeaponItem() {
+        return getItem();
+    }
 
     @Override
     protected Entity.MovementEmission getMovementEmission() {
@@ -310,6 +361,6 @@ public class ThunderClubEntity extends Projectile {
     enum ClubState {
         FLYING,
         HOOKED_IN_ENTITY,
-        BOBBING;
+        BOBBING
     }
 }

@@ -7,12 +7,15 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.MaceItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.client.GeoRenderProvider;
@@ -30,7 +33,7 @@ import tfar.gearith.platform.Services;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class ThunderClubItem extends Item implements GeoItem {
+public class ThunderClubItem extends MaceItem implements GeoItem {
 
     final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -80,7 +83,7 @@ public class ThunderClubItem extends Item implements GeoItem {
             );
             if (level instanceof ServerLevel serverlevel) {
                 int k = Gearith.getEnchantLevel(stack, ModEnchantments.PULLING_SPIKE, player.registryAccess());
-                Projectile.spawnProjectile(new ThunderClubEntity(player, level, k), serverlevel, stack);
+                Projectile.spawnProjectile(new ThunderClubEntity(player, level, k,stack), serverlevel, stack);
             }
 
             player.awardStat(Stats.ITEM_USED.get(this));
@@ -106,5 +109,15 @@ public class ThunderClubItem extends Item implements GeoItem {
                 return this.renderer.get();
             }
         });
+    }
+
+
+    //Neoforge IItemExtension
+    @SuppressWarnings("unused")
+    public AABB getSweepHitBox(ItemStack stack, Player player, Entity target) {
+        if (player.isCrouching() && Gearith.hasEnchant(stack, ModEnchantments.TETHERLASH, player.registryAccess()))
+        return target.getBoundingBox().inflate(2.0D, 0.5D, 2.0D);
+        else
+            return target.getBoundingBox().inflate(1.0D, .25, 1.0D);
     }
 }

@@ -80,7 +80,7 @@ public class ModEnchantments {
 }
 //BUT it'll also have 3 enchants.
 // the first enchant is a triple dash,
-// they can be used separately and they have their separate cooldowns (wich is around 3-2 seconds),
+// they can be used separately and they have their separate cooldowns (which is around 3-2 seconds),
 // once the player uses his last dash, he will crash into the ground and deal area damage around itself
 
 //the second enchant works the same as the first but it can reel in mobs with itself

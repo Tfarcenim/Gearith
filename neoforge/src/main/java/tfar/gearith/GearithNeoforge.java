@@ -4,9 +4,11 @@ package tfar.gearith;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.player.SweepAttackEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -33,6 +35,15 @@ public class GearithNeoforge {
         // Use NeoForge to bootstrap the Common mod.
         Gearith.init();
         NeoForge.EVENT_BUS.addListener(this::playerTick);
+        NeoForge.EVENT_BUS.addListener(this::sweepAttack);
+    }
+
+    void sweepAttack(SweepAttackEvent event) {
+        Player player = event.getEntity();
+        ItemStack stack = player.getMainHandItem();
+        if (stack.is(MItems.THUNDER_CLUB)) {
+            event.setSweeping(true);
+        }
     }
 
     void playerTick(PlayerTickEvent.Post event) {

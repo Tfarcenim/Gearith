@@ -25,6 +25,7 @@ public class GearithDatagen {
         lookupProvider = provider.getRegistryProvider();
         event.addProvider(new ModEnchantmentTagsProvider(packOutput,lookupProvider));
         event.addProvider(new ModItemTagsProvider(packOutput,lookupProvider));
+        event.addProvider(new ModLangProvider(packOutput));
     }
 
 }
